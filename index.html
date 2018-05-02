@@ -81,15 +81,23 @@ var allLv2Upgrades = [
 	"shield.png",
 ];
 
-function generatebuild(){
-	var gun = allguns[Math.floor(Math.random() * allguns.length)];
-	var armor = allarmors[Math.floor(Math.random() * allarmors.length)];
-	var u1 = allLv1Upgrades[Math.floor(Math.random() * allLv1Upgrades.length)];
-	var u2 = allLv2Upgrades[Math.floor(Math.random() * allLv2Upgrades.length)];
-	var u3;
-	do{
-		u3 = allLv1Upgrades[Math.floor(Math.random() * allLv1Upgrades.length)];
-	}while(u3 == u1);
+var generating = false;
+var gun;
+var armor;
+var u1;
+var u2;
+var u3;
+var hasntrun = true;
+function slot(t){
+	if(hasntrun || (t < 0.5 && (t < 0 || (t-0) - Math.random()/2 < 0))) gun = allguns[Math.floor(Math.random() * allguns.length)];
+	if(hasntrun || (t < 0.75 && (t < 0.25 || (t-0.25) - Math.random()/2 < 0))) armor = allarmors[Math.floor(Math.random() * allarmors.length)];
+	if(hasntrun || (t < 1 && (t < .5 || (t-.5) - Math.random()/2 < 0))) u1 = allLv1Upgrades[Math.floor(Math.random() * allLv1Upgrades.length)];
+	if(hasntrun || (t < 1.25 && (t < .75 || (t-.75) - Math.random()/2 < 0))) u2 = allLv2Upgrades[Math.floor(Math.random() * allLv2Upgrades.length)];
+	if(hasntrun || (t < 1.5 && (t < 1 || (t-1) - Math.random()/2 < 0))){
+		do{
+			u3 = allLv1Upgrades[Math.floor(Math.random() * allLv1Upgrades.length)];
+		}while(u3 == u1);
+	}
 	dot("#build-output").empty()
 	.category("Gun", 
 		dot.choice("./images/" + gun, 150)
@@ -101,7 +109,16 @@ function generatebuild(){
 		dot.choice("./images/" + u1, 104)
 		.choice("./images/" + u2, 104)
 		.choice("./images/" + u3, 104)
-	)
+	);
+	if(t < 1.5) setTimeout(function(){slot(t+0.03)},50 );
+	else generating = false;
+}
+function generatebuild(){
+	hasntrun = true;
+	if(generating) return;
+	generating = true;
+	slot(0);
+	hasntrun = false;
 }
 
 dot.createWidget("choice", function(url, size){
